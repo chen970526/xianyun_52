@@ -1,18 +1,37 @@
 module.exports = {
   root: true,
-  env: {
-    browser: true,
-    node: true
-  },
   parserOptions: {
     parser: 'babel-eslint'
   },
+  env: {
+    browser: true
+  },
   extends: [
-    '@nuxtjs',
-    'plugin:nuxt/recommended'
+    // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
+    // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
+    'plugin:vue/essential',
+    // https://github.com/standard/standard/blob/master/docs/RULES-en.md
+    'standard'
   ],
-  plugins: [
-  ],
+  // required to lint *.vue files
+  plugins: ['vue'],
   // add your custom rules here
-  rules: {}
-}
+  rules: {
+    // allow async-await
+    'no-console': 'off',
+    indent: ['error', 2, {
+      SwitchCase: 1
+    }],
+    semi: ['error', 'always'],
+    'space-before-function-paren': [
+      'error',
+      {
+        anonymous: 'always',
+        named: 'never'
+      }
+    ],
+    'generator-star-spacing': 'off',
+    // allow debugger during development
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+  }
+};
