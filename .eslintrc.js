@@ -1,6 +1,8 @@
 module.exports = {
   root: true,
   parserOptions: {
+    // ecmaVersion: 7,
+    // sourceType: 'module',
     parser: 'babel-eslint'
   },
   env: {
@@ -17,6 +19,8 @@ module.exports = {
   plugins: ['vue'],
   // add your custom rules here
   rules: {
+    // 不让eslint强制转换const
+    // 'prefer-const ': 0,
     // allow async-await
     'no-console': 'off',
     indent: ['error', 2, {

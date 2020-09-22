@@ -35,9 +35,9 @@ export default {
     'element-ui/lib/theme-chalk/index.css',
     'assets/main.css' // 新增自定义的页面过渡样式（文件来自3.4.1）
   ],
-  js: [
-    'assets/api.js'
-  ],
+  // js: [
+  //   'assets/api.js'
+  // ],
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
     '@/plugins/element-ui'
@@ -60,8 +60,8 @@ export default {
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {
-    // baseURL: "http://157.122.54.189:9095" // 新增备用地址
-    baseURL: 'http://127.0.0.1:1337' // 新增axios默认请求路径
+    baseURL: 'http://157.122.54.189:9095' // 新增备用地址
+    // baseURL: 'http://127.0.0.1:1337' // 新增axios默认请求路径
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
