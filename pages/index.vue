@@ -40,7 +40,7 @@ export default {
       coverList: [],
       tabList: [
         { name: '攻略', desc: '请输入搜索的城市', url: '/post?city=' },
-        { name: '酒店', desc: '请输入搜索酒店的城市', url: '/hotle?city=' },
+        { name: '酒店', desc: '请输入搜索酒店的城市', url: '/hotel?city=' },
         { name: '机票', desc: '请输入搜索机票的城市', url: '/air' }
       ],
       disposeIndex: 0,
@@ -77,10 +77,6 @@ export default {
   min-width: 1000px;
   margin: 0 auto;
   position: relative;
-
-  /deep/ .el-carousel__container {
-    height: 700px;
-  }
 
   .banner-image {
     width: 100%;
