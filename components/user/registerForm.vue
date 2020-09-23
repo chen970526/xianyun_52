@@ -6,7 +6,7 @@
       </el-form-item>
       <el-form-item prop="captcha">
         <el-input type="text" v-model="user.captcha" clearable placeholder="验证码"></el-input>
-        <el-button>发送验证码</el-button>
+        <el-button @click="getcaptcha">发送验证码</el-button>
       </el-form-item>
       <el-form-item prop="nickname">
         <el-input type="text" v-model="user.nickname" clearable placeholder="昵称"></el-input>
@@ -77,6 +77,23 @@ export default {
   methods: {
     junplogin() {
       this.$emit('junplogin', 0);
+    },
+    getcaptcha() {
+      if (this.user.username !== '') {
+        this.$store.dispatch('user/getcaptcha', { tel: this.user.username }).then(res => {
+          console.log(res);
+          this.$alert(`验证码为：${res.data.code}`, {
+            dangerouslyUseHTMLString: true
+          });
+        }).catch(err => {
+          console.log(err);
+          this.$alert('发送超时', {
+            dangerouslyUseHTMLString: true
+          });
+        });
+      } else {
+        this.$message.error('请输入手机号');
+      }
     }
   }
 };

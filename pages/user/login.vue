@@ -31,7 +31,7 @@ export default {
   },
   data() {
     return {
-      toggleIndex: 0
+      toggleIndex: 1
     };
   },
   methods: {

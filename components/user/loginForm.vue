@@ -60,19 +60,27 @@ export default {
     login() {
       this.$refs.ruleForm.validate(async (valid) => {
         if (valid) {
-          try {
-            const res = await this.$axios({
-              method: 'post',
-              url: '/accounts/login',
-              data: this.user
-            });
+          // try {
+          //   const res = await this.$axios({
+          //     method: 'post',
+          //     url: '/accounts/login',
+          //     data: this.user
+          //   });
+          //   console.log(res);
+          //   this.$message.success('登陆成功!!!');
+          //   this.$store.commit('user/increment', res.data);
+          //   this.$router.push({ path: '/' });
+          // } catch (err) {
+          //   this.$message.error('登陆失败!请检查用户名或密码');
+          // }
+          this.$store.dispatch('user/loginActions', this.user).then(res => {
             console.log(res);
             this.$message.success('登陆成功!!!');
-            this.$store.commit('user/increment', res.data);
             this.$router.push({ path: '/' });
-          } catch (err) {
+          }).catch(err => {
+            console.log(err);
             this.$message.error('登陆失败!请检查用户名或密码');
-          }
+          });
         } else {
           this.$message.error('请输入内容');
         }
