@@ -10,11 +10,28 @@ export const state = () => {
 export const mutations = {
   increment(state, data) {
     state.userstate = data;
+  },
+  removedata(state) {
+    state.userstate = {};
   }
+
 };
 
 export const actions = {
-  loginActions({ commit }, data) {
+  registeruser({
+    commit
+  }, data) {
+    return this.$axios({
+      method: 'post',
+      url: '/accounts/register',
+      data
+    }).then(res => {
+      return res;
+    });
+  },
+  loginActions({
+    commit
+  }, data) {
     return this.$axios({
       method: 'post',
       url: '/accounts/login',
@@ -24,7 +41,9 @@ export const actions = {
       return res;
     });
   },
-  getcaptcha({ commit }, data) {
+  getcaptcha({
+    commit
+  }, data) {
     return this.$axios({
       method: 'post',
       url: '/captchas',

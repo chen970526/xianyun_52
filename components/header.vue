@@ -10,19 +10,34 @@
 
       <!-- 菜单栏 -->
       <el-row type="flex" class="navs">
-        <nuxt-link to="/" :class="{'nuxt-link-exact-active nuxt-link-active':$route.path==='/'}">首页</nuxt-link>
+        <nuxt-link
+          to="/"
+          :class="{
+            'nuxt-link-exact-active nuxt-link-active': $route.path === '/',
+          }"
+          >首页</nuxt-link
+        >
         <nuxt-link
           to="/post"
-          :class="{'nuxt-link-exact-active nuxt-link-active':$route.path==='/post'}"
-        >旅游攻略</nuxt-link>
+          :class="{
+            'nuxt-link-exact-active nuxt-link-active': $route.path === '/post',
+          }"
+          >旅游攻略</nuxt-link
+        >
         <nuxt-link
           to="/hotel"
-          :class="{'nuxt-link-exact-active nuxt-link-active':$route.path==='/hotel'}"
-        >酒店</nuxt-link>
+          :class="{
+            'nuxt-link-exact-active nuxt-link-active': $route.path === '/hotel',
+          }"
+          >酒店</nuxt-link
+        >
         <nuxt-link
           to="/air"
-          :class="{'nuxt-link-exact-active nuxt-link-active':$route.path==='/air'}"
-        >国内机票</nuxt-link>
+          :class="{
+            'nuxt-link-exact-active nuxt-link-active': $route.path === '/air',
+          }"
+          >国内机票</nuxt-link
+        >
       </el-row>
 
       <!-- 登录/用户信息 -->
@@ -32,7 +47,7 @@
           <el-row type="flex" align="middle" class="el-dropdown-link">
             <nuxt-link to="#">
               <img src="http://157.122.54.189:9093/images/pic_sea.jpeg" />
-              {{$store.state.user.userstate.user.nickname}}
+              {{ $store.state.user.userstate.user.nickname }}
             </nuxt-link>
             <i class="el-icon-caret-bottom el-icon--right" />
           </el-row>
@@ -41,19 +56,33 @@
               <nuxt-link to="#">个人中心</nuxt-link>
             </el-dropdown-item>
             <el-dropdown-item>
-              <div>退出</div>
+              <div @click="quituser">退出</div>
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
 
         <!-- 不存在用户信息展示登录注册链接 -->
-        <nuxt-link v-else to="/user/login" class="account-link">登录 / 注册</nuxt-link>
+        <nuxt-link v-else to="/user/login" class="account-link"
+          >登录 / 注册</nuxt-link
+        >
       </el-row>
     </el-row>
   </header>
 </template>
 <script>
 export default {
+  methods: {
+    quituser() {
+      this.$confirm('确认退出？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$store.commit('user/removedata');
+        this.$message.success('退出成功');
+      });
+    }
+  }
 };
 </script>
 <style scoped lang="less">
