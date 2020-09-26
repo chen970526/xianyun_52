@@ -51,5 +51,17 @@ export const actions = {
     }).then(res => {
       return res;
     });
+  },
+  // JiPiao - 实时机票城市
+  /// airs/city
+  seatchdata({
+    commit
+  }, data) {
+    return this.$axios({
+      url: 'airs/city',
+      params: data
+    }).then(res => {
+      return res;
+    });
   }
 };

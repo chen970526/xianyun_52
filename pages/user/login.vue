@@ -8,9 +8,10 @@
           <span
             v-for="(item, index) in [`登录`, `注册`]"
             :key="index"
-            :class="{active:toggleIndex===index}"
+            :class="{ active: toggleIndex === index }"
             @click="toggletab(index)"
-          >{{item}}</span>
+            >{{ item }}</span
+          >
         </el-row>
 
         <!-- 登录功能组件 -->
@@ -31,7 +32,7 @@ export default {
   },
   data() {
     return {
-      toggleIndex: 1
+      toggleIndex: 0
     };
   },
   methods: {

@@ -137,35 +137,30 @@ export default {
       this.$emit('junplogin', 0);
     },
     getcaptcha() {
-      this.onoff = true;
-      let times = 10;
-      this.$refs.btn.$el.innerText = `${times}秒`;
-      const timesId = setInterval(() => {
-        if (times === 0) { clearInterval(timesId); this.onoff = false; this.$refs.btn.$el.innerText = '发送验证码'; } else {
-          times--;
-          this.$refs.btn.$el.innerText = `${times}秒`;
-        }
-      }, 1000);
-      // setTimeout(() => {
-
-      // });
-
-      // if (this.user.username !== '') {
-      //   // this.onoff = true;
-      //   this.$store.dispatch('user/getcaptcha', { tel: this.user.username }).then(res => {
-      //     console.log(res);
-      //     this.$alert(`验证码为：${res.data.code}`, {
-      //       dangerouslyUseHTMLString: true
-      //     });
-      //   }).catch(err => {
-      //     console.log(err);
-      //     this.$alert('发送超时', {
-      //       dangerouslyUseHTMLString: true
-      //     });
-      //   });
-      // } else {
-      //   this.$message.error('请输入手机号');
-      // }
+      if (this.user.username !== '') {
+        this.onoff = true;
+        let times = 10;
+        this.$refs.btn.$el.innerText = `${times}秒`;
+        const timesId = setInterval(() => {
+          if (times === 0) { clearInterval(timesId); this.onoff = false; this.$refs.btn.$el.innerText = '发送验证码'; } else {
+            times--;
+            this.$refs.btn.$el.innerText = `${times}秒`;
+          }
+        }, 1000);
+        this.$store.dispatch('user/getcaptcha', { tel: this.user.username }).then(res => {
+          console.log(res);
+          this.$alert(`验证码为：${res.data.code}`, {
+            dangerouslyUseHTMLString: true
+          });
+        }).catch(err => {
+          console.log(err);
+          this.$alert('发送超时', {
+            dangerouslyUseHTMLString: true
+          });
+        });
+      } else {
+        this.$message.error('请输入手机号');
+      }
     }
   }
 };
