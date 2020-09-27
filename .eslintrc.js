@@ -24,7 +24,7 @@ module.exports = {
     'standard/computed-property-even-spacing': [2, 'even'],
     'standard/no-callback-literal': [2, ['cb', 'callback']],
     // 不让eslint强制转换const
-    // 'prefer-const ': 0,
+    'prefer-const': 0,
     // allow async-await
     'no-console': 'off',
     indent: ['error', 2, {
