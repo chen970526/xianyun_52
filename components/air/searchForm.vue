@@ -237,6 +237,7 @@ export default {
           this.searchdata.destCity = this.searchdata.destCity.slice(0, this.searchdata.destCity.indexOf('市'));
         }
         console.log(this.searchdata);
+        this.$store.commit('air/setSearchHistory', this.searchdata);
         this.$router.push({ path: '/air/flights', query: this.searchdata });
       }
     }
