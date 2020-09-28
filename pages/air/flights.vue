@@ -4,7 +4,13 @@
       <!-- 顶部过滤列表 -->
       <div class="flights-content">
         <!-- 过滤条件 -->
-        <div></div>
+
+        <!-- v-if="flightsListData.info" -->
+        <FlightsFilters
+          :flightsData="flightsListData"
+          @handledata="filtrateList"
+          @initdata="initList"
+        />
 
         <!-- 航班头部布局 -->
         <div>
@@ -19,13 +25,14 @@
             <el-col :span="5"> 价格 </el-col>
           </el-row>
         </div>
-
+        <div class="none" v-if="handleList.length === 0">找不到相关数据</div>
         <!-- 航班信息 -->
         <FlightsItem
           v-for="(item, index) in handleList"
           :key="index"
           :data="item"
         />
+
         <!-- 分页插件 -->
         <el-pagination
           @size-change="handleSizeChange"
@@ -34,7 +41,7 @@
           :page-sizes="[5, 10, 15, 20]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="flightslist.length"
+          :total="total"
         >
         </el-pagination>
       </div>
@@ -57,22 +64,74 @@ export default {
       flightslist: [], // 保留的总数据
       handleList: [],
       pageSize: 5,
-      pageIndex: 1
+      pageIndex: 1,
+      flightsListData: {},
+      total: 0,
+      screenData: null
     };
   },
   methods: {
+    initList() {
+      this.screenData = null;
+      this.init();
+    },
     init() {
-      this.handleList = this.flightslist.slice((this.pageIndex - 1) * this.pageSize, (this.pageIndex - 1) * this.pageSize + this.pageSize);
-      console.log(this.handleList);
+      if (this.screenData) {
+        // console.log(data, 'data');
+        this.total = this.screenData.length;
+        this.handleList = this.screenData.slice((this.pageIndex - 1) * this.pageSize, (this.pageIndex - 1) * this.pageSize + this.pageSize);
+        // console.log(this.handleList);
+      } else {
+        // console.log(this.flightslist);
+        this.total = this.flightslist.length;
+        this.handleList = this.flightslist.slice((this.pageIndex - 1) * this.pageSize, (this.pageIndex - 1) * this.pageSize + this.pageSize);
+      }
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      // console.log(`每页 ${val} 条`);
       this.pageSize = val;
       this.init();
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      // console.log(`当前页: ${val}`);
       this.pageIndex = val;
+      this.init();
+    },
+    filtrateList(data) {
+      console.log(data);
+      let obj = [];
+      data.forEach((item, index) => {
+        for (let d in item) {
+          if (index === 0) {
+            obj = this.flightslist.filter(i => {
+              if (d === 'dep_time') {
+                if (
+                  item[d][0] <= +i[d].split(':')[0] && item[d][1] > +i[d].split(':')[0]
+                ) {
+                  return i;
+                }
+              } else {
+                return i[d] === item[d];
+              }
+            });
+          } else {
+            obj = obj.filter(i => {
+              // return i[d] === item[d];
+              if (d === 'dep_time') {
+                if (
+                  item[d][0] <= +i[d].split(':')[0] && item[d][1] > +i[d].split(':')[0]
+                ) {
+                  return i;
+                }
+              } else {
+                return i[d] === item[d];
+              }
+            });
+          }
+        }
+      });
+      this.screenData = obj;
+      this.pageIndex = 1;
       this.init();
     }
   },
@@ -84,6 +143,8 @@ export default {
     }).then(res => {
       console.log(res);
       this.flightslist = res.data.flights;
+      const { flights, ...props } = res.data;
+      this.flightsListData = props;
       this.init();
     });
   }
@@ -94,6 +155,12 @@ export default {
 .contianer {
   width: 1000px;
   margin: 20px auto;
+  .none {
+    width: 100%;
+    line-height: 70px;
+    text-align: center;
+    background-color: #ccc;
+  }
 }
 
 .flights-content {

@@ -83,20 +83,20 @@ export default {
   },
   methods: {
     handletime() {
-      console.log(this.data.arr_time); // 到达时间
-      console.log(this.data.dep_time); // 出发时间
+      // console.log(this.data.arr_time); // 到达时间
+      // console.log(this.data.dep_time); // 出发时间
       const cfsj = this.data.arr_time.split(':');
       const ddsj = this.data.dep_time.split(':');
       let clcfsj = cfsj[0] * 60 + +cfsj[1];
       const clddsj = ddsj[0] * 60 + +ddsj[1];
-      console.log(clcfsj);
-      console.log(clddsj);
-      console.log(clcfsj - clddsj);
+      // console.log(clcfsj);
+      // console.log(clddsj);
+      // console.log(clcfsj - clddsj);
       // console.log(Math.floor((clcfsj - clddsj) / 60));
       // console.log((clcfsj - clddsj) % 60);
       if (clcfsj < clddsj) {
         clcfsj += (24 * 60);
-        console.log(clcfsj);
+        // console.log(clcfsj);
       }
       return `${Math.floor(Math.abs(clcfsj - clddsj) / 60)}时${Math.abs(clcfsj - clddsj) % 60}分`;
     }
