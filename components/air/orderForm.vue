@@ -209,6 +209,7 @@ export default {
       }).then(res => {
         this.$store.commit('orderForm/setorderFormdata', {});
         console.log(res);
+        this.$router.push({ path: 'pay', query: { id: res.data.data.id } });
       });
     }
   }
