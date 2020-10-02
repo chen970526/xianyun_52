@@ -1,6 +1,7 @@
 export const state = () => {
   return {
-    searchHistory: []
+    searchHistory: [],
+    price: 0
   };
 };
 export const mutations = {
@@ -20,5 +21,8 @@ export const mutations = {
       state.searchHistory.unshift(data);
     }
     // state.searchHistory.unshift(data);
+  },
+  setPrice(state, data) {
+    state.price = data;
   }
 };

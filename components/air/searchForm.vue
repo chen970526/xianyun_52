@@ -224,12 +224,10 @@ export default {
         // eslint-disable-next-line no-const-assign
         return rules[i].value === '';
       });
-      console.log(indexxx);
       if (indexxx !== -1) {
         console.log(rules[Object.keys(rules)[indexxx]]);
         this.$message.warning(`${rules[Object.keys(rules)[indexxx]].message}`);
       } else {
-        // || this.searchdata.destCity.indexOf('市') !== -1) { }
         if (this.searchdata.departCity.indexOf('市') !== -1) {
           this.searchdata.departCity = this.searchdata.departCity.slice(0, this.searchdata.departCity.indexOf('市'));
         }

@@ -48,6 +48,8 @@ export default {
     };
   },
   async mounted() {
+    // let aa = (f => n => n > 1 ? f(f)(n - 1) + f(f)(n - 2) : n)(f => n => n > 1 ? f(f)(n - 1) + f(f)(n - 2) : n)(10);
+    // console.log(aa);
     const coverListdata = await this.$axios({
       url: '/scenics/banners',
       method: 'get'

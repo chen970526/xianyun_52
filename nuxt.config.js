@@ -35,14 +35,21 @@ export default {
     'element-ui/lib/theme-chalk/index.css',
     'assets/main.css' // 新增自定义的页面过渡样式（文件来自3.4.1）
   ],
-  // js: [
-  //   'assets/api.js'
-  // ],
+  // script: [
+  //   {
+  //     type: 'text/javascript',
+  //     src:
+  //       'https://webapi.amap.com/maps?v=1.4.15&key=060b272204760db332cb8437f96c0d31&plugin=AMap.MouseTool,AMap.PolyEditor,AMap.LabelMarker,AMap.Autocomplete,AMap.ToolBar,AMap.PlaceSearch,AMap.Heatmap,AMap.Geocoder'
+  //   }],
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
     '@/plugins/element-ui',
     '@/plugins/myaxios',
-    { src: '@/plugins/localStorage.js', ssr: false }
+    // '@/plugins/vue-map',
+    {
+      src: '@/plugins/localStorage.js',
+      ssr: false
+    }
   ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)

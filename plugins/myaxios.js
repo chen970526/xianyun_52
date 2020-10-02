@@ -6,10 +6,12 @@ export default function ({ $axios, redirect }) {
     const { statusCode, message } = err.response.data;
 
     // 还未使用
-    // if(statusCode === 401 || statusCode === 403){
-    //     Message.warning({message: "请先登录"});
-    //     redirect("/user/login");
-    // }
+    if (statusCode === 401 || statusCode === 403) {
+      Message.warning({ message: '请先登录' });
+
+      console.log(window.location);
+      redirect(`/user/login?returnUrl=${window.location.pathname + window.location.search}`);
+    }
 
     if (statusCode === 400) {
       Message.warning({ message });

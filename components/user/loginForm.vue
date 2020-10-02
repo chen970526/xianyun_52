@@ -20,7 +20,9 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <nuxt-link class="form-text" to @click.native="junpregister">去注册</nuxt-link>
+        <nuxt-link class="form-text" to @click.native="junpregister"
+          >去注册</nuxt-link
+        >
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="login" class="submit">登陆</el-button>
@@ -76,7 +78,14 @@ export default {
           this.$store.dispatch('user/loginActions', this.user).then(res => {
             console.log(res);
             this.$message.success('登陆成功!!!');
-            this.$router.push({ path: '/' });
+            console.log();
+
+            if (this.$route.fullPath.split('?')[1]) {
+              console.log(decodeURIComponent(this.$route.fullPath.split('?')[1]).split('returnUrl=')[1]);
+              this.$router.push(decodeURIComponent(this.$route.fullPath.split('?')[1]).split('returnUrl=')[1]);
+            } else {
+              this.$router.push({ path: '/' });
+            }
           }).catch(err => {
             console.log(err);
             this.$message.error('登陆失败!请检查用户名或密码');
