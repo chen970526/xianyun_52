@@ -2,13 +2,21 @@
   <div class="main">
     <div class="air-column">
       <h2>剩机人</h2>
-      <el-form class="member-info">
+      <el-form class="member-info" ref="users" :model="{ users }">
         <div
           class="member-info-item"
           v-for="(item, index) in users"
           :key="index"
         >
-          <el-form-item label="乘机人类型">
+          <el-form-item
+            label="乘机人类型"
+            :prop="`users.${index}.username`"
+            :rules="{
+              required: true,
+              message: '名字不能为空',
+              trigger: 'blur',
+            }"
+          >
             <el-input
               placeholder="姓名"
               class="input-with-select"
@@ -20,11 +28,26 @@
             </el-input>
           </el-form-item>
 
-          <el-form-item label="证件类型">
+          <el-form-item
+            label="证件类型"
+            :prop="`users.${index}.id`"
+            :rules="[
+              {
+                required: true,
+                message: '请输入身份证',
+                trigger: 'blur',
+              },
+              { type: 'number', message: '请输入数字值' },
+              {
+                pattern: /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/,
+                message: '身份证格式错误',
+              },
+            ]"
+          >
             <el-input
               placeholder="证件号码"
               class="input-with-select"
-              v-model="item.id"
+              v-model.number="item.id"
             >
               <el-select slot="prepend" value="1" placeholder="请选择">
                 <el-option label="身份证" value="1" :checked="true"></el-option>
@@ -63,21 +86,42 @@
     <div class="air-column">
       <h2>联系人</h2>
       <div class="contact">
-        <el-form label-width="60px">
-          <el-form-item label="姓名">
-            <el-input v-model="contactName"></el-input>
+        <el-form label-width="80px" ref="linkman" :model="linkman">
+          <el-form-item
+            label="姓名"
+            prop="contactName"
+            :rules="[{ required: true, message: '请输入紧急联系人名字' }]"
+          >
+            <el-input v-model="linkman.contactName"></el-input>
           </el-form-item>
 
-          <el-form-item label="手机">
-            <el-input placeholder="请输入内容" v-model="contactPhone">
+          <el-form-item
+            label="手机"
+            prop="contactPhone"
+            :rules="[
+              { required: true, message: '输入手机号' },
+              {
+                pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+                message: '手机格式错误',
+              },
+            ]"
+          >
+            <el-input
+              placeholder="请输入内容"
+              v-model.number="linkman.contactPhone"
+            >
               <template slot="append">
                 <el-button @click="handleSendCaptcha">发送验证码</el-button>
               </template>
             </el-input>
           </el-form-item>
 
-          <el-form-item label="验证码">
-            <el-input v-model="captcha"></el-input>
+          <el-form-item
+            label="验证码"
+            prop="captcha"
+            :rules="[{ required: true, message: '输入验证码' }]"
+          >
+            <el-input v-model="linkman.captcha"></el-input>
           </el-form-item>
         </el-form>
         <el-button type="warning" class="submit" @click="handleSubmit"
@@ -97,23 +141,27 @@ export default {
     }
   },
   mounted() {
-    console.log(this.selectdata.insurances);
-    console.log(this.selectdata);
-    console.log(this.$store.state.orderForm.orderFormdata);
+    // console.log(this.selectdata.insurances);
+    // console.log(this.selectdata);
+    // console.log(this.$store.state.orderForm.orderFormdata);
     if (this.$store.state.orderForm.orderFormdata.users) {
       this.initdata(this.$store.state.orderForm.orderFormdata);
+      this.$store.commit('orderForm/setorderFormdata', {});
     }
   },
   data() {
     return {
       users: [{
         username: '',
-        id: ''
+        id: 440681199705266600
       }],
       insuranceList: [], // 保险数据
-      contactName: '', // 联系人名字
-      contactPhone: '', // 手机
-      captcha: '', // 手机验证码
+      linkman: {
+        contactName: '', // 联系人名字
+        contactPhone: '', // 手机
+        captcha: '' // 手机验证码
+      },
+
       invoice: false // 发票 默认为false
     };
   },
@@ -141,9 +189,9 @@ export default {
       this.users = obj.users;
       this.insuranceList = obj.insuranceList;
       console.log(this.insuranceList);
-      this.contactName = obj.contactName;
-      this.contactPhone = obj.contactPhone;
-      this.captcha = obj.captcha;
+      this.linkman.contactName = obj.contactName;
+      this.linkman.contactPhone = obj.contactPhone;
+      this.linkman.captcha = obj.captcha;
       this.invoice = obj.invoice;
     },
     // 添加乘机人
@@ -164,7 +212,7 @@ export default {
       this.$axios({
         method: 'post',
         url: '/captchas',
-        data: { tel: this.contactPhone }
+        data: { tel: this.linkman.contactPhone }
       }).then(res => {
         console.log(res);
         this.$confirm(`验证码是${res.data.code}`, '提示', {
@@ -182,34 +230,42 @@ export default {
 
     // 提交订单
     handleSubmit() {
-      // eslint-disable-next-line camelcase
-      let { id, seat_xid } = this.$route.query;
-      this.$store.commit('orderForm/setorderFormdata', {
-        users: this.users,
-        insuranceList: this.insuranceList,
-        contactName: this.contactName,
-        contactPhone: this.contactPhone,
-        invoice: this.invoice,
-        captcha: this.captcha
-      });
-      this.$axios({
-        method: 'post',
-        url: '/airorders',
-        headers: { Authorization: 'bearer ' + this.$store.state.user.userstate.token },
-        data: {
-          users: this.users,
-          insurances: this.insuranceList,
-          contactName: this.contactName,
-          contactPhone: this.contactPhone,
-          invoice: this.invoice,
-          seat_xid: seat_xid,
-          air: id,
-          captcha: this.captcha
+      this.$refs.users.validate(valid => {
+        if (valid) {
+          this.$refs.linkman.validate(valid2 => {
+            if (valid2) {
+              // eslint-disable-next-line camelcase
+              let { id, seat_xid } = this.$route.query;
+              this.$store.commit('orderForm/setorderFormdata', {
+                users: this.users,
+                insuranceList: this.insuranceList,
+                contactName: this.linkman.contactName,
+                contactPhone: this.linkman.contactPhone,
+                invoice: this.invoice,
+                captcha: this.linkman.captcha
+              });
+              this.$axios({
+                method: 'post',
+                url: '/airorders',
+                headers: { Authorization: 'bearer ' + this.$store.state.user.userstate.token },
+                data: {
+                  users: this.users,
+                  insurances: this.insuranceList,
+                  contactName: this.linkman.contactName,
+                  contactPhone: this.linkman.contactPhone,
+                  invoice: this.invoice,
+                  seat_xid: seat_xid,
+                  air: id,
+                  captcha: this.linkman.captcha
+                }
+              }).then(res => {
+                this.$store.commit('orderForm/setorderFormdata', {});
+                console.log(res);
+                this.$router.push({ path: 'pay', query: { id: res.data.data.id } });
+              });
+            }
+          });
         }
-      }).then(res => {
-        this.$store.commit('orderForm/setorderFormdata', {});
-        console.log(res);
-        this.$router.push({ path: 'pay', query: { id: res.data.data.id } });
       });
     }
   }
