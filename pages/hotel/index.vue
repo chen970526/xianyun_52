@@ -16,17 +16,18 @@
         <el-row class="search-options">
           <el-row class="options-row" type="flex">
             <el-col :span="3">区域:</el-col>
-            <el-col :span="24">
+            <el-col :span="24" :class="{ 'hidden-all': isshow }">
               <div class="scenics-box">
-                <div class="location-budget">人民广场</div>
-                <div class="location-budget">人民广场</div>
-                <div class="location-budget">人民广场</div>
-                <div class="location-budget">人民广场</div>
-                <div class="location-budget">人民广场</div>
-                <div class="location-budget">人民广场</div>
-                <div class="location-budget">人民广场</div>
+                <span
+                  class="location-budget"
+                  v-for="(item, index) in mapdata.data
+                    ? mapdata.data[0].scenics
+                    : []"
+                  :key="index"
+                  >{{ item.name }}</span
+                >
               </div>
-              <nuxt-link to="#">
+              <nuxt-link to @click.native="isshow = !isshow">
                 <i class="el-icon-d-arrow-right"></i> 等29个区域</nuxt-link
               >
             </el-col>
@@ -94,8 +95,16 @@
       </el-col>
       <el-col :span="10"><div id="container"></div></el-col>
     </el-row>
-    <ListFilter />
-    <HotelList />
+    <ListFilter
+      v-if="options.assets"
+      :optionsdata="options"
+      @sendfilterdata="getfilterdata"
+    />
+    <HotelList
+      v-if="hoteldata.data"
+      @getindex="handleindex"
+      :senddata="hoteldata"
+    />
     <!-- 引入高德地图的js -->
     <!-- <script
       type="text/javascript"
@@ -106,6 +115,19 @@
 
 <script>
 export default {
+  data() {
+    return {
+      center: [0, 0],
+      diming: '',
+      isshow: true,
+      mapdata: {},
+      options: {},
+      city: '', // 城市id
+      hoteldata: {}, // 酒店信息
+      pageindex: 0,
+      filterList: []
+    };
+  },
   mounted() {
     window.onLoad = this.initmap;
     var url =
@@ -115,33 +137,133 @@ export default {
     jsapi.charset = 'utf-8';
     jsapi.src = url;
     document.head.appendChild(jsapi);
+    console.log(this.$route);
+    this.optionsdata();
+    if (this.$route.query.cityName) {
+      this.getmapdata();
+    }
+    // console.log(this.diming);
+  },
+  watch: {
+    $route() {
+      this.getmapdata();
+    }
   },
   methods: {
+    // 接收筛选数据
+    getfilterdata(data) {
+      // console.log(data);
+      // data.fildIndex();
+      let index = 0;
+      for (let p in data) {
+        console.log(p);
+        index = this.filterList.findIndex((item, index) => {
+          console.log(item);
+          return item[p];
+        });
+      }
+      console.log(index);
+      if (index !== -1) {
+        this.filterList.splice(index, 1);
+      }
+      this.filterList.push(data);
+      console.log(this.filterList);
+    },
+    // 处理分页
+    handleindex(data) {
+      this.pageindex = (data - 1) * 10;
+      console.log(this.pageindex);
+      this.getHoteldata({
+        city: this.city,
+        _start: this.pageindex
+      });
+    },
+    // 获取当前城市酒店
+    getHoteldata(obj) {
+      this.$axios({
+        url: '/hotels',
+        params: obj
+      }).then(res => {
+        console.log(res);
+        this.hoteldata = res.data;
+      });
+    },
+    // 获取筛选项
+    optionsdata() {
+      this.$axios({
+        url: '/hotels/options'
+      }).then(res => {
+        this.options = res.data.data;
+        console.log(this.options);
+      });
+    },
+    // 获取当前城市
+    getmapdata() {
+      this.$axios({
+        url: '/cities',
+        params: { name: this.$route.query.cityName }
+      }).then(res => {
+        // console.log(res);
+        this.city = res.data.data[0].id;
+        this.mapdata = res.data;
+        console.log(this.city);
+        this.getHoteldata({ city: this.city });
+      });
+    },
     // 初始化地图
     initmap() {
       var map = new window.AMap.Map('container', {
-        zoom: 30, // 级别
-        center: [113.427912, 23.129489], // 中心点坐标
-        pitch: 75,
-        viewMode: '3D' // 使用3D视图
+        zoom: 10, // 级别
+        resizeEnable: true
+        // center: this.center // 中心点坐标
+        // pitch: 75,
+        // viewMode: '3D' // 使用3D视图
       });
       console.log(map);
-
+      console.log(this.$route);
+      if (!this.$route.query.cityName) {
+        console.log('this.$route.query.cityName');
+        this.initdata();
+      }
+    },
+    initdata() {
       // eslint-disable-next-line no-undef
-      // var map = new AMap.Map('container', {
-      //   zoom: 11, // 级别
-      //   pitch: 70, // 地图俯仰角度，有效范围 0 度- 83 度
-      //   center: [113.4278180000, 23.1293300000], // 中心点坐标
-      //   viewMode: '3D' // 使用3D视图
-      // });
-      // // eslint-disable-next-line no-undef
-      // var marker1 = new AMap.Marker({
-      //   // eslint-disable-next-line no-undef
-      //   position: new AMap.LngLat(113.4278180000, 23.1293300000), // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-      //   title: '黑马程序员'
-      //   // icon: 'https://fs-km.7moor.com/N00000021451/km/2018-08-30/1535629155660/52cdcfd0-ac49-11e8-b46c-47849b41fd55?imageView2/1/w/50/h/50'
-      // });
-      // map.add([marker1]);
+      AMap.plugin('AMap.Geolocation', () => {
+        var geolocation = new window.AMap.Geolocation({
+          // 是否使用高精度定位，默认：true
+          enableHighAccuracy: true,
+          // 设置定位超时时间，默认：无穷大
+          timeout: 10000,
+          // 定位按钮的停靠位置的偏移量，默认：Pixel(10, 20)
+          buttonOffset: new window.AMap.Pixel(10, 20),
+          //  定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+          zoomToAccuracy: true,
+          //  定位按钮的排放位置,  RB表示右下
+          buttonPosition: 'RB'
+        });
+
+        geolocation.getCurrentPosition();
+        // eslint-disable-next-line no-undef
+        AMap.event.addListener(geolocation, 'complete', (data) => {
+          // data是具体的定位信息
+          console.log(data, '成功');
+          console.log(this.diming);
+          console.log(this.$route);
+          this.center = [data.position.Q, data.position.R];
+          this.diming = data.addressComponent.city;
+          console.log(this.center);
+          console.log(this.diming);
+          this.$router.replace({ path: '/hotel', query: { cityName: this.diming } });
+          // console.log(this.center);
+        });
+        // eslint-disable-next-line no-undef
+        AMap.event.addListener(geolocation, 'error', onError);
+
+        function onError(data) {
+          console.log(data, '错误');
+          // 定位出错
+        }
+      });
     }
   }
 };
@@ -166,9 +288,11 @@ export default {
       margin-bottom: 20px;
       color: #666;
       font-size: 14px;
-      .scenics-box {
+      .hidden-all .scenics-box {
         max-height: 3em;
         overflow: hidden;
+      }
+      .scenics-box {
         .location-budget {
           margin-right: 1em;
           padding: 0 2px;

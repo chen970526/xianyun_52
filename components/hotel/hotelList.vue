@@ -1,35 +1,40 @@
 <template>
   <div class="hotel-list">
-    <el-row class="hotel-item" style="margin-left: -10px; margin-right: -10px">
+    <el-row
+      class="hotel-item"
+      style="margin-left: -10px; margin-right: -10px"
+      v-for="(item, index) in senddata.data"
+      :key="index"
+    >
       <el-col :span="8" style="padding-left: 10px; padding-right: 10px">
         <span class="img-wrapper">
           <nuxt-link to="">
-            <img
-              width="320"
-              height="210"
-              src="https://p1.meituan.net/hotel/c48d045b9f5bf221c479f55c622c8782154904.jpg%40700w_700h_0e_1l%7Cwatermark%3D1%26%26r%3D1%26p%3D9%26x%3D2%26y%3D2%26relative%3D1%26o%3D20"
-              alt=""
-            />
+            <img width="320" height="210" :src="item.photos" :alt="item.name" />
           </nuxt-link>
         </span>
       </el-col>
-      <el-col :span="10" style="padding-left: 10px; padding-right: 10px">
+      <el-col :span="11" style="padding-left: 10px; padding-right: 10px">
         <h4 class="hotel-cn-name">
-          <nuxt-link to="">锦江之星(吴泾店)</nuxt-link>
+          <nuxt-link to="">{{ item.name }}</nuxt-link>
         </h4>
         <div class="hotel-en-name">
-          <span>jin jiang zhi xing (shang hai min hang wu jing dian)</span>
-          <span style="display: flex" title="3星级">
-            <i class="iconfont iconhuangguan"></i>
-            <i class="iconfont iconhuangguan"></i>
-            <i class="iconfont iconhuangguan"></i>
+          <span>{{ item.alias }}</span>
+          <span
+            style="display: flex"
+            :title="`${item.hotellevel ? item.hotellevel.name : ''}级`"
+          >
+            <i
+              class="iconfont iconhuangguan"
+              v-for="(v, i) of item.hotellevel ? item.hotellevel.level : 0"
+              :key="i"
+            ></i>
           </span>
-          <span>经济型</span>
+          <span>{{ item.hoteltype.name }}</span>
         </div>
         <el-row type="flex" style="margin-left: -5px; margin-right: -5px">
           <el-col style="padding-left: 5px; padding-right: 5px" :span="10">
             <el-rate
-              v-model="star"
+              v-model="item.stars"
               disabled
               show-score
               text-color="#ff9900"
@@ -38,50 +43,69 @@
             </el-rate>
           </el-col>
           <el-col style="padding-left: 5px; padding-right: 5px" :span="7">
-            <span class="height-light">27</span> 条评价 </el-col
+            <span class="height-light">{{
+              Math.floor(Math.random() * 100)
+            }}</span>
+            条评价 </el-col
           ><el-col style="padding-left: 5px; padding-right: 5px" :span="7"
-            ><span class="height-light">27</span> 篇游记
+            ><span class="height-light">{{
+              Math.floor(Math.random() * 100)
+            }}</span>
+            篇游记
           </el-col>
         </el-row>
         <div class="hotel-summary-row"></div>
-        <div class="location-row">
-          <i class="iconfont iconlocation"></i>位于: 剑川路165号(近龙吴路)
+        <div class="location-row" style="margin-top: 10px">
+          <i class="iconfont iconlocation"></i>{{ item.address }}
         </div>
       </el-col>
-      <el-col
-        :span="6"
-        class="price-col"
-        style="padding-left: 10px; padding-right: 10px"
-      >
-        <el-table :show-header="false" :data="tableData" style="width: 100%">
+      <el-col :span="5" class="price-col">
+        <el-table
+          :show-header="false"
+          :data="item.products"
+          style="width: 100%"
+        >
           <el-table-column prop="name" width="100"> </el-table-column>
           <el-table-column width="100">
             <template slot-scope="scope">
-              <span style="margin-left: 10px">￥{{ scope.row.price }}起</span>
+              <span style="margin-left: 10px"
+                >￥<span class="height-light">{{ scope.row.price }}</span>
+                起</span
+              >
             </template>
           </el-table-column>
         </el-table>
       </el-col>
     </el-row>
+    <div class="pagination-box">
+      <el-pagination
+        layout="prev, pager, next"
+        :total="senddata.total"
+        @current-change="handlepage"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: ['senddata'],
   data() {
     return {
-      star: 3.5,
-      tableData: [{
-        name: '携程',
-        price: '186'
-      }, {
-        name: '艺龙',
-        price: '186'
-      }, {
-        name: 'Hotels.com',
-        price: '186'
-      }]
+      tableData: []
     };
+  },
+  mounted() {
+    console.log(this.senddata);
+  },
+  methods: {
+    // initdata(){
+    //   this.
+    // }
+    handlepage(val) {
+      this.$emit('getindex', val);
+    }
   }
 };
 </script>
@@ -98,8 +122,18 @@ export default {
   font-size: x-large;
 }
 .hotel-en-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
   color: #999;
   margin-bottom: 0.5em;
+}
+.hotel-list {
+  .pagination-box {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 0 40px;
+  }
 }
 .hotel-item {
   padding: 25px 0;
