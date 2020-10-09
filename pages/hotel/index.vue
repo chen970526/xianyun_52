@@ -3,10 +3,10 @@
     <div class="breadcrumb">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item :to="{ path: '/hotel' }">酒店</el-breadcrumb-item>
-        <el-breadcrumb-item>酒店预订</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ diming }}酒店预订</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-    <HotelSearchBar />
+    <HotelSearchBar @senddate="getdate" @sendcityName="getcityName" />
     <el-row
       type="flex"
       class="hotel-option-row"
@@ -117,18 +117,27 @@
 export default {
   data() {
     return {
+      map: {},
       center: [0, 0],
+      newcenter: [],
       diming: '',
       isshow: true,
       mapdata: {},
       options: {},
-      city: '', // 城市id
       hoteldata: {}, // 酒店信息
-      pageindex: 0,
-      filterList: []
+      // city: '', // 城市id
+      // _start: 0, // 分页
+      filterList: {
+        city: '', // 城市id
+        _start: 0 // 分页
+      }
     };
   },
   mounted() {
+    if (this.$route.query.cityName) {
+      this.getmapdata();
+      this.diming = this.$route.query.cityName;
+    }
     window.onLoad = this.initmap;
     var url =
       'https://webapi.amap.com/maps?v=1.4.15&key=060b272204760db332cb8437f96c0d31&callback=onLoad';
@@ -137,55 +146,91 @@ export default {
     jsapi.charset = 'utf-8';
     jsapi.src = url;
     document.head.appendChild(jsapi);
-    console.log(this.$route);
+    // window.onLoad = this.initmap;
+    // var url =
+    //   'https://webapi.amap.com/maps?v=1.4.15&key=060b272204760db332cb8437f96c0d31&callback=onLoad';
+
+    // var jsapi = document.createElement('script');
+    // jsapi.charset = 'utf-8';
+    // jsapi.src = url;
+    // document.head.appendChild(jsapi);
     this.optionsdata();
-    if (this.$route.query.cityName) {
-      this.getmapdata();
-    }
+
     // console.log(this.diming);
   },
   watch: {
     $route() {
+      this.diming = this.$route.query.cityName;
       this.getmapdata();
     }
   },
   methods: {
+    // 处理地区转换
+    getcityName(data) {
+      console.log(data);
+      this.$router.replace({ path: '/hotel', query: { cityName: data } });
+    },
+    // 接收时间参数
+    getdate(data) {
+      // console.log(data);
+      console.log(this.filterList);
+      Object.keys(data).forEach(key => {
+        this.filterList[key] = data[key];
+      });
+      // console.log(this.obj2str());
+      this.getHoteldata(this.obj2str());
+    },
     // 接收筛选数据
     getfilterdata(data) {
+      // let index = 0;
+      // for (let p in data) {
+      //   index = Object.keys(this.filterList).findIndex((item, index) => {
+      //     return item[p];
+      //   });
+      // }
+      // console.log(index);
+      // if (index !== -1) {
+      //   this.filterList.splice(index, 1);
+      // }
       // console.log(data);
-      // data.fildIndex();
-      let index = 0;
-      for (let p in data) {
-        console.log(p);
-        index = this.filterList.findIndex((item, index) => {
-          console.log(item);
-          return item[p];
-        });
-      }
-      console.log(index);
-      if (index !== -1) {
-        this.filterList.splice(index, 1);
-      }
-      this.filterList.push(data);
+      // console.log(Object.keys(data));
+      this.filterList[Object.keys(data)] = data[Object.keys(data)];
       console.log(this.filterList);
+      console.log(this.obj2str());
+      this.getHoteldata(this.obj2str());
+    },
+    // 转换分类数据为字符串
+    obj2str() {
+      let urldata = '';
+      Object.keys(this.filterList).forEach(key => {
+        // console.log(typeof this.filterList[key]);
+        if (this.filterList[key]) {
+          if (Array.isArray(this.filterList[key])) {
+            this.filterList[key].forEach(item => {
+              urldata += `${key}_in=${item}&`;
+            });
+          } else {
+            urldata += `${key}=${this.filterList[key]}&`;
+          }
+        }
+      });
+      // console.log(urldata);
+      return urldata;
     },
     // 处理分页
     handleindex(data) {
-      this.pageindex = (data - 1) * 10;
-      console.log(this.pageindex);
-      this.getHoteldata({
-        city: this.city,
-        _start: this.pageindex
-      });
+      this.filterList._start = (data - 1) * 10;
+      console.log(this.filterList._start);
+      this.getHoteldata(this.obj2str());
     },
     // 获取当前城市酒店
-    getHoteldata(obj) {
+    getHoteldata(str) {
       this.$axios({
-        url: '/hotels',
-        params: obj
+        url: `/hotels?${str}`
       }).then(res => {
         console.log(res);
         this.hoteldata = res.data;
+        this.getcentre();
       });
     },
     // 获取筛选项
@@ -204,25 +249,58 @@ export default {
         params: { name: this.$route.query.cityName }
       }).then(res => {
         // console.log(res);
-        this.city = res.data.data[0].id;
+        this.filterList.city = res.data.data[0].id;
         this.mapdata = res.data;
-        console.log(this.city);
-        this.getHoteldata({ city: this.city });
+        console.log(this.filterList.city);
+        this.getHoteldata(this.obj2str());
       });
+    },
+    // 获取中心点
+    getcentre() {
+      let arr = [];
+      console.log(this.hoteldata.data[0].location);
+      Object.keys(this.hoteldata.data[0].location).forEach(key => {
+        arr.push(this.hoteldata.data[0].location[key]);
+      });
+      this.newcenter = arr;
+      console.log(this.newcenter);
+      this.initmap();
+    },
+    // 地图平移
+    movemap() {
+      // console.log([this.newcenter[0], this.newcenter[1]]);
+      // this.map.panTo([this.newcenter[0], this.newcenter[1]]);
+      // var lnglat = new window.AMap.LngLat(this.newcenter[0], this.newcenter[1]);
+      // var pixel = this.map.lngLatToContainer(lnglat);
+      // console.log(pixel);
+      console.log(this.newcenter);
+      this.map.setCenter([this.newcenter[1], this.newcenter[0]]);
+      // this.map.panTo([this.newcenter[0], this.newcenter[1]]);
     },
     // 初始化地图
     initmap() {
-      var map = new window.AMap.Map('container', {
+      console.log('我来了');
+      // eslint-disable-next-line no-unused-vars
+      this.map = new window.AMap.Map('container', {
         zoom: 10, // 级别
         resizeEnable: true
-        // center: this.center // 中心点坐标
+        // center: this.newcenter.length === 2 ? this.newcenter : this.center// 中心点坐标
         // pitch: 75,
         // viewMode: '3D' // 使用3D视图
       });
-      console.log(map);
-      console.log(this.$route);
+      console.log(this.map);
+      // console.log(this.$route);
+      // console.log(this.newcenter);
+      if (this.newcenter.length === 2) {
+        // eslint-disable-next-line no-unused-vars
+        // const pixel = new window.AMap.Pixel(this.newcenter[0], this.newcenter[1]);
+        // map.containerToLngLat(pixel); // 获得 Pixel 对象
+        // console.log(this.newcenter);
+        this.movemap();
+      }
+
       if (!this.$route.query.cityName) {
-        console.log('this.$route.query.cityName');
+        // console.log('this.$route.query.cityName');
         this.initdata();
       }
     },
@@ -247,12 +325,12 @@ export default {
         AMap.event.addListener(geolocation, 'complete', (data) => {
           // data是具体的定位信息
           console.log(data, '成功');
-          console.log(this.diming);
-          console.log(this.$route);
+          // console.log(this.diming);
+          // console.log(this.$route);
           this.center = [data.position.Q, data.position.R];
           this.diming = data.addressComponent.city;
-          console.log(this.center);
-          console.log(this.diming);
+          // console.log(this.center);
+          // console.log(this.diming);
           this.$router.replace({ path: '/hotel', query: { cityName: this.diming } });
           // console.log(this.center);
         });

@@ -1,5 +1,5 @@
 <template>
-  <div class="hotel-list">
+  <div class="hotel-list" v-if="senddata.data.length > 0">
     <el-row
       class="hotel-item"
       style="margin-left: -10px; margin-right: -10px"
@@ -86,6 +86,7 @@
       </el-pagination>
     </div>
   </div>
+  <div class="none" v-else>没有如何数据</div>
 </template>
 
 <script>
@@ -97,7 +98,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.senddata);
+    // console.log(this.senddata);
   },
   methods: {
     // initdata(){

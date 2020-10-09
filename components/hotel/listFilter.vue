@@ -8,7 +8,7 @@
       >
         <el-row class="filter-title" type="flex">
           <el-col :span="24">价格</el-col>
-          <el-col :span="24" style="text-align: right">0-4000</el-col>
+          <el-col :span="24" style="text-align: right">0-{{ price }}</el-col>
         </el-row>
         <el-row>
           <el-slider
@@ -237,22 +237,22 @@ export default {
     // 处理滑块
     handleCommandprice() {
       console.log(this.price);
-      this.$emit('sendfilterdata', { price_in: this.price });
+      this.$emit('sendfilterdata', { price_lt: this.price });
     },
     // 清空筛选
     initfilter() {
-      this.Levels.length = 0;
-      this.Types.length = 0;
-      this.Assets.length = 0;
-      this.Brands.length = 0;
-      this.CommandLevels.length = 0;
-      this.CommandTypes.length = 0;
-      this.CommandAssets.length = 0;
-      this.CommandBrands.length = 0;
+      //   this.Levels.length = 0;
+      //   this.Types.length = 0;
+      //   this.Assets.length = 0;
+      //   this.Brands.length = 0;
+      //   this.CommandLevels.length = 0;
+      //   this.CommandTypes.length = 0;
+      //   this.CommandAssets.length = 0;
+      //   this.CommandBrands.length = 0;
     },
     handleCommandLevels(v) {
       // CommandLevels
-      console.log(this.optionsdata);
+      // console.log(this.optionsdata);
       this.CommandLevels = this.handlefilterdata(this.Levels, this.CommandLevels, 'levels', v);
       // console.log(this.Levels);
       // console.log(this.CommandLevels);
@@ -260,7 +260,7 @@ export default {
     },
     handleCommandTypes(v) {
       // CommandTypes
-      console.log(this.optionsdata);
+      // console.log(this.optionsdata);
       this.CommandTypes = this.handlefilterdata(this.Types, this.CommandTypes, 'types', v);
       // console.log(this.Types);
       // console.log(this.CommandTypes);
