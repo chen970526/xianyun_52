@@ -117,9 +117,10 @@
 export default {
   data() {
     return {
-      map: {},
-      center: [0, 0],
-      newcenter: [],
+      map: {}, // 地图实例
+      center: [0, 0], // 地图中心
+      newcenter: [], // 地图中心
+      markers: [], // 附近建筑的点标记
       diming: '',
       isshow: true,
       mapdata: {},
@@ -258,12 +259,22 @@ export default {
     // 获取中心点
     getcentre() {
       let arr = [];
-      console.log(this.hoteldata.data[0].location);
+      let arr2 = [];
+      // console.log(this.hoteldata.data[0].location);
       Object.keys(this.hoteldata.data[0].location).forEach(key => {
         arr.push(this.hoteldata.data[0].location[key]);
       });
       this.newcenter = arr;
-      console.log(this.newcenter);
+      // console.log(this.newcenter);
+      this.hoteldata.data.forEach((item, index) => {
+        // console.log(item.location);
+        arr2.push({
+          position: [item.location[Object.keys(item.location)[1]], item.location[Object.keys(item.location)[0]]],
+          icon: `//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-${index + 1}.png`
+        });
+      });
+      this.markers = arr2;
+      console.log(this.markers);
       this.initmap();
     },
     // 地图平移
@@ -274,15 +285,42 @@ export default {
       // var pixel = this.map.lngLatToContainer(lnglat);
       // console.log(pixel);
       console.log(this.newcenter);
-      this.map.setCenter([this.newcenter[1], this.newcenter[0]]);
-      // this.map.panTo([this.newcenter[0], this.newcenter[1]]);
+      // this.map.setCenter([this.newcenter[1], this.newcenter[0]]);
+      this.map.panTo([this.newcenter[1], this.newcenter[0]]);
+      // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
+      this.markers.forEach(marker => {
+        // eslint-disable-next-line no-new
+        const markerdata = new window.AMap.Marker({
+          map: this.map,
+          // icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+          icon: new window.AMap.Icon({
+            // image: marker.icon,
+            image: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
+            // size: new window.AMap.Size(20, 20) // 图标大小
+            imageSize: new window.AMap.Size(20, 35)
+          }),
+          position: [marker.position[0], marker.position[1]],
+          offset: new window.AMap.Pixel(-13, -30)
+        });
+        // 鼠标点击marker弹出自定义的信息窗体
+        window.AMap.event.addListener(markerdata, 'mouseover', () => {
+          infoWindow.open(this.map, markerdata.getPosition());
+        });
+        window.AMap.event.addListener(markerdata, 'mouseout', () => {
+          this.map.clearInfoWindow();
+        });
+      });
+      var infoWindow = new window.AMap.InfoWindow({
+        isCustom: true, // 使用自定义窗体
+        content: '<div style="display: flex;background-color: #fff;"><p style="padding: 10px 18px 10px 10px;">我是内容</p><span style="display: block;">X</span></div>',
+        offset: new window.AMap.Pixel(16, -45)
+      });
     },
     // 初始化地图
     initmap() {
-      console.log('我来了');
       // eslint-disable-next-line no-unused-vars
       this.map = new window.AMap.Map('container', {
-        zoom: 10, // 级别
+        zoom: 15, // 级别
         resizeEnable: true
         // center: this.newcenter.length === 2 ? this.newcenter : this.center// 中心点坐标
         // pitch: 75,
