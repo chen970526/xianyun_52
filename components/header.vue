@@ -27,7 +27,8 @@
         <nuxt-link
           to="/hotel"
           :class="{
-            'nuxt-link-exact-active nuxt-link-active': $route.path === '/hotel',
+            'nuxt-link-exact-active nuxt-link-active':
+              $route.path.indexOf('/hotel') !== -1,
           }"
           >酒店</nuxt-link
         >
@@ -71,6 +72,9 @@
 </template>
 <script>
 export default {
+  mounted() {
+    console.log(this.$route.path);
+  },
   methods: {
     quituser() {
       this.$confirm('确认退出？', {

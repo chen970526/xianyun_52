@@ -241,14 +241,7 @@ export default {
     },
     // 清空筛选
     initfilter() {
-      //   this.Levels.length = 0;
-      //   this.Types.length = 0;
-      //   this.Assets.length = 0;
-      //   this.Brands.length = 0;
-      //   this.CommandLevels.length = 0;
-      //   this.CommandTypes.length = 0;
-      //   this.CommandAssets.length = 0;
-      //   this.CommandBrands.length = 0;
+      window.location.href = '/hotel';
     },
     handleCommandLevels(v) {
       // CommandLevels

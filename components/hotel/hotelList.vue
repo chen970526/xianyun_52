@@ -8,7 +8,7 @@
     >
       <el-col :span="8" style="padding-left: 10px; padding-right: 10px">
         <span class="img-wrapper">
-          <nuxt-link to="">
+          <nuxt-link :to="`/hotel/${item.id}.html`">
             <img width="320" height="210" :src="item.photos" :alt="item.name" />
           </nuxt-link>
         </span>
@@ -98,7 +98,7 @@ export default {
     };
   },
   mounted() {
-    // console.log(this.senddata);
+    console.log(this.senddata);
   },
   methods: {
     // initdata(){
