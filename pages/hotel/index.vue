@@ -288,17 +288,19 @@ export default {
       // this.map.setCenter([this.newcenter[1], this.newcenter[0]]);
       this.map.panTo([this.newcenter[1], this.newcenter[0]]);
       // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
-      this.markers.forEach(marker => {
+      this.markers.forEach((marker, index) => {
         // eslint-disable-next-line no-new
         const markerdata = new window.AMap.Marker({
           map: this.map,
-          // icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
-          icon: new window.AMap.Icon({
-            // image: marker.icon,
-            image: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
-            // size: new window.AMap.Size(20, 20) // 图标大小
-            imageSize: new window.AMap.Size(20, 35)
-          }),
+          // icon: 'https://webapi.amap.com/theme/v1.3/markers/b/mark_b.png',
+          // icon: new window.AMap.Icon({
+          //   // image: marker.icon,
+          //   image: 'https://webapi.amap.com/theme/v1.3/markers/b/mark_b.png',
+          //   // image: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-3.png',
+          //   // size: new window.AMap.Size(20, 20) // 图标大小
+          //   imageSize: new window.AMap.Size(20, 35)
+          // }),
+          content: `<span class="marker">${index + 1}</span>`,
           position: [marker.position[0], marker.position[1]],
           offset: new window.AMap.Pixel(-13, -30)
         });
@@ -389,6 +391,16 @@ export default {
 #container {
   width: 100%;
   height: 100%;
+}
+/deep/.marker {
+  display: inline-block;
+  width: 22px;
+  height: 36px;
+  background-image: url(https://webapi.amap.com/theme/v1.3/markers/b/mark_b.png);
+  background-size: 22px 36px;
+  text-align: center;
+  line-height: 24px;
+  color: #fff;
 }
 .hotel {
   width: 1000px;
