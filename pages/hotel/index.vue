@@ -267,10 +267,11 @@ export default {
       this.newcenter = arr;
       // console.log(this.newcenter);
       this.hoteldata.data.forEach((item, index) => {
-        // console.log(item.location);
+        // console.log(item);
         arr2.push({
           position: [item.location[Object.keys(item.location)[1]], item.location[Object.keys(item.location)[0]]],
-          icon: `//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-${index + 1}.png`
+          icon: `//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-${index + 1}.png`,
+          name: item.name
         });
       });
       this.markers = arr2;
@@ -311,11 +312,11 @@ export default {
         window.AMap.event.addListener(markerdata, 'mouseout', () => {
           this.map.clearInfoWindow();
         });
-      });
-      var infoWindow = new window.AMap.InfoWindow({
-        isCustom: true, // 使用自定义窗体
-        content: '<div style="display: flex;background-color: #fff;"><p style="padding: 10px 18px 10px 10px;">我是内容</p><span style="display: block;">X</span></div>',
-        offset: new window.AMap.Pixel(16, -45)
+        var infoWindow = new window.AMap.InfoWindow({
+          isCustom: true, // 使用自定义窗体
+          content: `<div style="display: flex;background-color: #fff;"><p style="padding: 10px 18px 10px 10px;">${marker.name}</p><span style="display: block;">X</span></div>`,
+          offset: new window.AMap.Pixel(16, -45)
+        });
       });
     },
     // 初始化地图

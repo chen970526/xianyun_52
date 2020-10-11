@@ -31,27 +31,27 @@
     <el-row class="pic-info info-row">
       <el-row class="photo-view">
         <el-col class="main-pic" :span="16">
-          <img
-            src="http://157.122.54.189:9093/images/hotel-pics/1.jpeg"
-            alt="锦江之星(吴泾店)"
-            height="360"
-            width="640"
-          />
+          <img :src="srcurl" alt="锦江之星(吴泾店)" height="360" width="640" />
         </el-col>
         <el-col class="list-pics" :span="8">
           <el-row
             class="list-item"
             style="margin-left: -10px; margin-right: -10px"
           >
-            <el-col :span="12" style="padding-left: 10px; padding-right: 10px">
-              <a href="javascript:void(0)">
+            <el-col
+              :span="12"
+              style="padding-left: 10px; padding-right: 10px"
+              v-for="item of 6"
+              :key="item"
+            >
+              <a href="javascript:void(0)" @click="huan(item)">
                 <img
-                  src="http://157.122.54.189:9093/images/hotel-pics/1.jpeg"
+                  :src="`http://157.122.54.189:9093/images/hotel-pics/${item}.jpeg`"
                   width="160"
                   alt="锦江之星(吴泾店)"
                 /> </a
             ></el-col>
-            <el-col :span="12" style="padding-left: 10px; padding-right: 10px">
+            <!-- <el-col :span="12" style="padding-left: 10px; padding-right: 10px">
               <a href="javascript:void(0)">
                 <img
                   src="http://157.122.54.189:9093/images/hotel-pics/2.jpeg"
@@ -90,7 +90,7 @@
                   width="160"
                   alt="锦江之星(吴泾店)"
                 /> </a
-            ></el-col>
+            ></el-col> -->
           </el-row>
         </el-col>
       </el-row>
@@ -109,7 +109,8 @@
 export default {
   data() {
     return {
-      hoteldata: {}
+      hoteldata: {},
+      srcurl: 'http://157.122.54.189:9093/images/hotel-pics/1.jpeg'
     };
   },
   mounted() {
@@ -121,6 +122,12 @@ export default {
       this.hoteldata = res.data.data[0];
       console.log(this.hoteldata);
     });
+  },
+  methods: {
+    huan(item) {
+      console.log(item);
+      this.srcurl = `http://157.122.54.189:9093/images/hotel-pics/${item}.jpeg`;
+    }
   }
 };
 </script>

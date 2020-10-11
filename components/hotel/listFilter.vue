@@ -241,7 +241,8 @@ export default {
     },
     // 清空筛选
     initfilter() {
-      window.location.href = '/hotel';
+      // window.location.href = '/hotel';
+      this.$router.go(0);
     },
     handleCommandLevels(v) {
       // CommandLevels
